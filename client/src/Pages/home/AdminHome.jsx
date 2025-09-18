@@ -10,6 +10,7 @@ import {
   ListItem,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import LogoutIcon from '@mui/icons-material/Logout';
 import useUserLogin from '../../Hooks/useUserLogin';
 import { ThemeContext } from '../../ThemeContex';
 import { useNavigate } from 'react-router-dom';
@@ -87,31 +88,98 @@ const AdminHome = () => {
   return (
     <Box sx={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1f1d1d, #2b2b2b)',
-      color: 'white',
+      background: 'linear-gradient(135deg, #F7F8FA 0%, #EFF6FF 100%)',
+      color: '#1f2937',
       display: 'flex',
       flexDirection: 'column',
+      overflow: 'hidden'
     }}>
-      <Logout />
+      {/* Mobile Header with Greeting and Logout */}
+      <Box sx={{
+        display: { xs: 'flex', md: 'none' },
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        p: 3,
+        backgroundColor: '#ffffff',
+        borderBottom: '1px solid #E5E7EB',
+        boxShadow: '0 2px 4px rgba(59, 130, 246, 0.1)',
+        minHeight: '80px',
+        position: 'relative',
+        zIndex: 1000
+      }}>
+        <Box sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          minHeight: '48px'
+        }}>
+          <Typography variant="h4" sx={{ 
+            fontWeight: 'bold',
+            color: '#1f2937',
+            fontSize: '1.5rem',
+            lineHeight: 1.2
+          }}>
+            Hey, {user?.fullname || 'Admin'}
+          </Typography>
+        </Box>
+        <Box sx={{
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          minHeight: '48px'
+        }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              localStorage.removeItem("user-info");
+              localStorage.removeItem("user");
+              window.location.href = "/";
+            }}
+            sx={{
+              borderRadius: 2,
+              minWidth: 'auto',
+              width: 40,
+              height: 40,
+              p: 0,
+              borderColor: '#3B82F6',
+              color: '#3B82F6',
+              '&:hover': { 
+                borderColor: '#1D4ED8', 
+                background: '#EFF6FF' 
+              }
+            }}
+          >
+            <LogoutIcon sx={{ fontSize: 20 }} />
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Desktop Logout */}
+      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+        <Logout />
+      </Box>
       <Box sx={{
         display: 'flex',
         flex: 1,
-        p: 3,
-        gap: 3
+        p: { xs: 2, md: 3 },
+        gap: { xs: 2, md: 3 },
+        flexDirection: { xs: 'column', md: 'row' }
       }}>
         {/* Past Meetings Section */}
         <Paper
           elevation={6}
           sx={{
-            width: '25%',
-            p: 3,
-            backgroundColor: '#262626',
+            width: { xs: '100%', md: '25%' },
+            p: { xs: 2, md: 3 },
+            backgroundColor: '#ffffff',
             borderRadius: 3,
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            color: "white",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.4)"
+            color: "#1f2937",
+            boxShadow: "0 4px 20px rgba(59, 130, 246, 0.1)",
+            border: '1px solid #E5E7EB',
+            order: { xs: 3, md: 1 }
           }}
         >
           <Typography
@@ -120,8 +188,10 @@ const AdminHome = () => {
               fontWeight: 'bold',
               textAlign: 'center',
               pb: 2,
-              borderBottom: '2px solid #444',
-              letterSpacing: 1
+              borderBottom: '2px solid #3B82F6',
+              letterSpacing: 1,
+              color: '#1f2937',
+              fontSize: { xs: '1.5rem', md: '2.125rem' }
             }}
           >
             Past Meetings
@@ -133,30 +203,54 @@ const AdminHome = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
-              startAdornment: <SearchIcon sx={{ color: '#000', mr: 1 }} />,
+              startAdornment: <SearchIcon sx={{ color: '#6B7280', mr: 1 }} />,
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                backgroundColor: 'white',
-                borderRadius: 2
+                backgroundColor: '#F9FAFB',
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: '#F3F4F6'
+                }
               }
             }}
           />
 
-          <List sx={{ overflow: 'hidden', flex: 1 }}>
+          <List sx={{ 
+            overflow: 'auto', 
+            flex: 1,
+            maxHeight: '60vh',
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#F1F5F9',
+              borderRadius: '3px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#3B82F6',
+              borderRadius: '3px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: '#1D4ED8',
+            }
+          }}>
             {manuallyFilteredData.length > 0 ? (
               manuallyFilteredData.map((item, index) => (
                 <ListItem
                   key={index}
                   sx={{
                     mb: 2,
-                    background: '#1a1a1a',
-                    border: '1px solid #444',
+                    background: '#F9FAFB',
+                    border: '2px solid #E5E7EB',
                     borderRadius: 2,
                     transition: 'all 0.3s ease',
                     '&:hover': {
-                      backgroundColor: '#333',
+                      backgroundColor: '#F9FAFB',
+                      borderColor: '#3B82F6',
+                      borderWidth: '2px',
                       transform: 'scale(1.02)',
+                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.15)'
                     }
                   }}
                 >
@@ -166,7 +260,7 @@ const AdminHome = () => {
                     sx={{
                       textAlign: 'left',
                       p: 2,
-                      color: 'white',
+                      color: '#1f2937',
                       '&:hover': { backgroundColor: 'transparent' },
                     }}
                   >
@@ -185,7 +279,7 @@ const AdminHome = () => {
                       <Box sx={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        color: 'white'
+                        color: '#6B7280'
                       }}>
                         <Typography variant="body1">{item.date}</Typography>
                         <Typography variant="body1">{item.day}</Typography>
@@ -193,15 +287,16 @@ const AdminHome = () => {
                       </Box>
        <Box 
   sx={{ 
-    border: "1px solid #ccc",
+    border: "1px solid #D1D5DB",
     borderRadius: "8px",
     padding: "8px 12px",
    width:"100%",           // fixed width so wrapping happens
     wordWrap: "break-word",   // allow wrapping
-    whiteSpace: "normal"      // allow text to break into multiple lines
+    whiteSpace: "normal",      // allow text to break into multiple lines
+    backgroundColor: '#F3F4F6'
   }}
 >
-  <Typography variant="body1">
+  <Typography variant="body1" sx={{ color: '#374151' }}>
     Participants: {item.participants}
   </Typography>
 </Box>
@@ -211,7 +306,7 @@ const AdminHome = () => {
                 </ListItem>
               ))
             ) : (
-              <Typography sx={{ textAlign: 'center', color: '#aaa', mt: 4 }}>
+              <Typography sx={{ textAlign: 'center', color: '#6B7280', mt: 4 }}>
                 No meetings found
               </Typography>
             )}
@@ -220,24 +315,48 @@ const AdminHome = () => {
 
         {/* Main Content Section */}
         <Box sx={{
-          width: '75%',
+          width: { xs: '100%', md: '75%' },
           display: 'flex',
           flexDirection: 'column',
-          gap: 3
+          gap: 3,
+          overflow: 'hidden',
+          order: { xs: 2, md: 2 }
         }}>
+
+          {/* Desktop Greeting */}
+          <Box sx={{
+            display: { xs: 'none', md: 'flex' },
+            justifyContent: 'center',
+            alignItems: 'center',
+            py: 4
+          }}>
+            <Typography variant="h3" sx={{
+              fontWeight: 'bold',
+              color: '#1f2937',
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #3B82F6, #1D4ED8)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontSize: '2.5rem'
+            }}>
+              Hey, {user?.fullname || 'Admin'}
+            </Typography>
+          </Box>
           {/* Meeting Details */}
           {currentItem && (
             <Paper
               elevation={6}
               sx={{
                 p: 4,
-                backgroundColor: '#1e1e1e',
+                backgroundColor: '#ffffff',
                 borderRadius: 3,
                 maxWidth: '800px',
                 mx: 'auto',
                 width: '100%',
-                color: 'white',
-                boxShadow: "0 4px 25px rgba(0,0,0,0.5)"
+                color: '#1f2937',
+                boxShadow: "0 4px 25px rgba(59, 130, 246, 0.1)",
+                border: '1px solid #E5E7EB'
               }}
             >
               <Box sx={{
@@ -267,46 +386,26 @@ const AdminHome = () => {
                 {currentItem.subject}
               </Typography>
 
-              <Typography variant="h6" sx={{ ml: 4 ,color:"white"}}>
+              <Typography variant="h6" sx={{ ml: 4 ,color:"#374151"}}>
                 <strong>Presentees:</strong> {currentItem.participants}
               </Typography>
             </Paper>
           )}
-          {/* Logo and Description Section */}
-          {/* Logo Section */}
-<Box sx={{
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-  mb: 4
-}}>
-  <img 
-    src="/smartwhiteboard.png" 
-    alt="Smart Whiteboard Logo" 
-    style={{ width: "390px", marginBottom: "12px" }} 
-  />
-  <Typography variant="subtitle1" sx={{ fontStyle: 'italic', color: '#aaa' }}>
-    "Collaborate. Create. Inspire."
-  </Typography>
-</Box>
-
-
-
           {/* Create Room Section */}
           <Paper
             elevation={6}
             sx={{
-              p: 4,
-              backgroundColor: '#1e1e1e',
+              p: { xs: 3, md: 4 },
+              backgroundColor: '#ffffff',
               borderRadius: 3,
-              maxWidth: '800px',
+              maxWidth: { xs: '100%', md: '800px' },
               mx: 'auto',
               width: '100%',
-              color: 'white',
-              mt: 'auto',
-              mb: 4,
-              boxShadow: "0 4px 25px rgba(0,0,0,0.5)"
+              color: '#1f2937',
+              mt: { xs: 0, md: 'auto' },
+              mb: { xs: 2, md: 4 },
+              boxShadow: "0 4px 25px rgba(59, 130, 246, 0.1)",
+              border: '1px solid #E5E7EB'
             }}
           >
             <form onSubmit={handleSubmit}>
@@ -321,8 +420,11 @@ const AdminHome = () => {
                   mb: 3,
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2,
-                    backgroundColor: '#fff',
-                    fontSize: { xs: 13, sm: 15 }
+                    backgroundColor: '#F9FAFB',
+                    fontSize: { xs: 13, sm: 15 },
+                    '&:hover': {
+                      backgroundColor: '#F3F4F6'
+                    }
                   }
                 }}
               />
@@ -332,7 +434,10 @@ const AdminHome = () => {
                 alignItems: 'center',
                 gap: 3
               }}>
-                <Typography variant="h5" sx={{ textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ 
+                  textAlign: 'center',
+                  fontSize: { xs: '1.2rem', md: '1.5rem' }
+                }}>
                   Want to create a Room? Click below
                 </Typography>
                 <Button
@@ -340,15 +445,16 @@ const AdminHome = () => {
                   size="large"
                   type="submit"
                   sx={{
-                    backgroundColor: '#df8f19',
+                    backgroundColor: '#3B82F6',
                     color: 'white',
-                    px: 4,
+                    px: { xs: 3, md: 4 },
                     py: 1.5,
-                    fontSize: '1.1rem',
+                    fontSize: { xs: '1rem', md: '1.1rem' },
                     borderRadius: 2,
-                    boxShadow: "0 3px 10px rgba(0,0,0,0.4)",
+                    boxShadow: "0 3px 10px rgba(59, 130, 246, 0.3)",
+                    width: { xs: '100%', md: 'auto' },
                     '&:hover': {
-                      backgroundColor: '#ffc107',
+                      backgroundColor: '#1D4ED8',
                     }
                   }}
                 >

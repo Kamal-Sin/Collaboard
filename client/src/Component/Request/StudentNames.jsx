@@ -47,20 +47,22 @@ console.log(socketref.current.id,"studentname");
 
   return (
     <Paper
-      elevation={3}
+      elevation={2}
       sx={{
-        p: 2,
-        // height: '120px', // Fixed height
+        p: 2.5,
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        borderRadius: 2,
-        bgcolor: 'background.paper',
-        boxShadow: 1,
-        transition: 'background-color 0.3s ease',
+        borderRadius: 3,
+        bgcolor: 'white',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #E5E7EB',
+        transition: 'all 0.3s ease',
         '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+          transform: 'translateY(-2px)',
+          borderColor: '#3B82F6',
         },
       }}
     >
@@ -72,9 +74,19 @@ console.log(socketref.current.id,"studentname");
             overflow:"hidden"
         }}  
         >
-          <Typography fontSize={25}
-       
-        >{name}</Typography>
+          <Typography 
+            variant="h6"
+            sx={{
+              fontSize: '1.1rem',
+              fontWeight: 600,
+              color: '#1F2937',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            👤 {name}
+          </Typography>
          
         </Box>
         {value ? (
@@ -82,18 +94,37 @@ console.log(socketref.current.id,"studentname");
         ) : (
           <Button
             variant='contained'
-        
             sx={{
-              height: '50px',
-              minHeight: '50px',
-              maxHeight: '50px',
-              width: '40%',
-              fontSize: '0.6rem',
-              padding: '4px 8px',
+              height: '40px',
+              minHeight: '40px',
+              maxHeight: '40px',
+              width: '45%',
+              fontSize: '0.7rem',
+              padding: '8px 12px',
+              fontWeight: 600,
+              borderRadius: 2,
+              textTransform: 'none',
+              background: btnchange 
+                ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
+                : "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+              color: "white",
+              boxShadow: btnchange 
+                ? "0 2px 8px rgba(16, 185, 129, 0.3)"
+                : "0 2px 8px rgba(239, 68, 68, 0.3)",
+              '&:hover': {
+                background: btnchange 
+                  ? "linear-gradient(135deg, #059669 0%, #047857 100%)"
+                  : "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+                boxShadow: btnchange 
+                  ? "0 4px 12px rgba(16, 185, 129, 0.4)"
+                  : "0 4px 12px rgba(239, 68, 68, 0.4)",
+                transform: "translateY(-1px)"
+              },
+              transition: "all 0.2s ease-in-out"
             }}
             onClick={()=>Handleaccess(socketref,target,roomid)}
           >
-            {btnchange?"Give Access":"denie"}
+            {btnchange ? "Give Access" : "Revoke Access"}
           </Button>
         )}
       </Box>

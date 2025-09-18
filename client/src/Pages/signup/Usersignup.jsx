@@ -288,16 +288,7 @@ const Usersignup = () => {
                      justifyContent: 'center',
                      boxShadow: '0 8px 32px 0 rgba(59, 130, 246, 0.18)',
                      overflow: 'hidden',
-                     filter: 'blur(0.5px)',
-                     animation: 'float 6s ease-in-out infinite',
-                     '@keyframes float': {
-                       '0%, 100%': {
-                         transform: 'translateY(0px)'
-                       },
-                       '50%': {
-                         transform: 'translateY(-10px)'
-                       }
-                     }
+                     filter: 'blur(0.5px)'
                  }}>
                     <Typography
                         variant="h1"
@@ -309,10 +300,39 @@ const Usersignup = () => {
                             filter: 'blur(1.5px)',
                             textAlign: 'center',
                             lineHeight: 1,
-                            letterSpacing: '-0.02em'
+                            letterSpacing: '-0.02em',
+                            display: 'flex',
+                            gap: '0.1em',
+                            '& .letter': {
+                                display: 'inline-block',
+                                animation: 'letterBounce 5s ease-in-out infinite',
+                                animationDelay: 'calc(0.2s * var(--letter-index))',
+                                '@keyframes letterBounce': {
+                                    '0%, 80%': {
+                                        transform: 'translateY(0px)',
+                                        opacity: 1
+                                    },
+                                    '40%': {
+                                        transform: 'translateY(-20px)',
+                                        opacity: 0.8
+                                    },
+                                    '90%, 100%': {
+                                        transform: 'translateY(0px)',
+                                        opacity: 1
+                                    }
+                                }
+                            }
                         }}
                     >
-                        Collaboard
+                        {'Collaboard'.split('').map((letter, index) => (
+                            <span 
+                                key={index} 
+                                className="letter" 
+                                style={{ '--letter-index': index }}
+                            >
+                                {letter}
+                            </span>
+                        ))}
                     </Typography>
                     {/* Half-blur overlay */}
                     <Box sx={{

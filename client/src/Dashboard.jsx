@@ -140,7 +140,7 @@ socketref.current.on('disconnect-del',({username,id})=>{
           setatd(prv=>[...prv,{name:message,socketid:socketid}]);
 
           toast(
- username=='admin'&& <Request name={'studnet'} socketid={socketid} socketref={socketref} />,
+ username=='admin'&& <Request name={message} socketid={socketid} socketref={socketref} />,
   {
     position: "bottom-left",
     autoClose: 5000,       // 5 seconds = 5000 ms
@@ -319,41 +319,82 @@ console.log(student)
       }
        
 
-  {username=="admin"?<Button variant='contained' sx={{background:"#1A8899",
-        color:"white",
-      
-          fontSize:"0.9rem"
-        
-       }} onClick={sendMessage}
-       
-    
-       >Send_Attendance</Button>:
+  {username=="admin"?<Button 
+        variant='contained' 
+        sx={{
+          background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+          color: "white",
+          fontFamily: "Roboto",
+          fontWeight: 600,
+          fontSize: "0.9rem",
+          borderRadius: 2,
+          px: 3,
+          py: 1,
+          textTransform: 'none',
+          boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+          '&:hover': {
+            background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+            boxShadow: "0 6px 16px rgba(16, 185, 129, 0.4)",
+            transform: "translateY(-1px)"
+          },
+          transition: "all 0.2s ease-in-out"
+        }} 
+        onClick={sendMessage}
+       >
+        Send Attendance
+       </Button>:
        <Button 
-       variant='contained'
-       onClick={sendRequest}
-        sx={{background:"#1A8899",
-        color:"white",
-        fontFamily:"Roboto",
-          fontSize:"0.9rem"
-        
-       }}
-      
-       
-       >Send_Request</Button>
+         variant='contained'
+         onClick={sendRequest}
+         sx={{
+           background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+           color: "white",
+           fontFamily: "Roboto",
+           fontWeight: 600,
+           fontSize: "0.9rem",
+           borderRadius: 2,
+           px: 3,
+           py: 1,
+           textTransform: 'none',
+           boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+           '&:hover': {
+             background: "linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)",
+             boxShadow: "0 6px 16px rgba(59, 130, 246, 0.4)",
+             transform: "translateY(-1px)"
+           },
+           transition: "all 0.2s ease-in-out"
+         }}
+       >
+         Send Request
+       </Button>
       }
 
 
       
-       <Button variant='contained' sx={{background:"#ed4f41",
-        color:"white",
-       
-          fontSize:"0.9rem"
-        
-       }}
-       onClick={leave}
-      
-       
-       >Leave_Room</Button>
+       <Button 
+         variant='contained' 
+         sx={{
+           background: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+           color: "white",
+           fontFamily: "Roboto",
+           fontWeight: 600,
+           fontSize: "0.9rem",
+           borderRadius: 2,
+           px: 3,
+           py: 1,
+           textTransform: 'none',
+           boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
+           '&:hover': {
+             background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
+             boxShadow: "0 6px 16px rgba(239, 68, 68, 0.4)",
+             transform: "translateY(-1px)"
+           },
+           transition: "all 0.2s ease-in-out"
+         }}
+         onClick={leave}
+       >
+         Leave Room
+       </Button>
       </Box>
 
 
