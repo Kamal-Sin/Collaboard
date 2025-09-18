@@ -37,7 +37,7 @@ console.log(user.fullname,"after login")
         alignItems: 'center',
       }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#111', letterSpacing: 0.5, fontSize: { xs: 22, sm: 26 } }}>
-          Delta
+          Collaboard
         </Typography>
       </Box>
       {/* Mobile Header */}
@@ -52,7 +52,7 @@ console.log(user.fullname,"after login")
         alignItems: 'center',
       }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#111', letterSpacing: 0.5, fontSize: 22 }}>
-          Delta
+          Collaboard
         </Typography>
       </Box>
       {/* Bottom Left Copyright */}
@@ -64,7 +64,7 @@ console.log(user.fullname,"after login")
         display: { xs: 'none', md: 'block' }
       }}>
         <Typography variant="body2" sx={{ color: '#888' }}>
-          © Delta Smartboard 2025
+          © Collaboard 2025
         </Typography>
       </Box>
       {/* Left Side */}
@@ -140,7 +140,7 @@ console.log(user.fullname,"after login")
                 size="large"
                 sx={{
                   width: '100%',
-                  backgroundColor: '#7C3AED',
+                  backgroundColor: '#3B82F6',
                   color: 'white',
                   borderRadius: 2,
                   fontWeight: 600,
@@ -148,7 +148,7 @@ console.log(user.fullname,"after login")
                   textTransform: 'none',
                   py: 1,
                   boxShadow: 0,
-                  '&:hover': { backgroundColor: '#5B21B6' }
+                  '&:hover': { backgroundColor: '#1D4ED8' }
                 }}
               >
                 Join Room
@@ -157,7 +157,7 @@ console.log(user.fullname,"after login")
           </Box>
         </Box>
       </Box>
-      {/* Right Side - Blurred Square with Delta */}
+      {/* Right Side - Blurred Square with Collaboard */}
       <Box sx={{
         flex: 1,
         display: { xs: 'none', md: 'flex' },
@@ -168,30 +168,42 @@ console.log(user.fullname,"after login")
         overflow: 'hidden',
         height: '100vh',
       }}>
-        <Box sx={{
-          width: 320,
-          height: 320,
-          background: 'rgba(124, 58, 237, 0.15)',
-          borderRadius: 3,
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 8px 32px 0 rgba(124,58,237,0.18)',
-          overflow: 'hidden',
-          filter: 'blur(0.5px)'
-        }}>
+         <Box sx={{
+           width: 320,
+           height: 320,
+           background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%)',
+           borderRadius: 3,
+           position: 'relative',
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           boxShadow: '0 8px 32px 0 rgba(59, 130, 246, 0.18)',
+           overflow: 'hidden',
+           filter: 'blur(0.5px)',
+           animation: 'float 6s ease-in-out infinite',
+           '@keyframes float': {
+             '0%, 100%': {
+               transform: 'translateY(0px)'
+             },
+             '50%': {
+               transform: 'translateY(-10px)'
+             }
+           }
+         }}>
           <Typography
             variant="h1"
             sx={{
-              color: 'rgba(124, 58, 237, 0.5)',
-              fontWeight: 800,
-              fontSize: '5rem',
+              color: 'rgba(59, 130, 246, 0.4)',
+              fontWeight: 700,
+              fontSize: '3.5rem',
               zIndex: 2,
-              filter: 'blur(2px)'
+              filter: 'blur(1.5px)',
+              textAlign: 'center',
+              lineHeight: 1,
+              letterSpacing: '-0.02em'
             }}
           >
-            Delta
+            Collaboard
           </Typography>
           {/* Half-blur overlay */}
           <Box sx={{

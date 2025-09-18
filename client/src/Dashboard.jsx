@@ -253,7 +253,6 @@ console.log(student)
     
     <Box width={"100%"} 
     height={"100vh"}
-    border={"2px solid red"}
     >
          <ReactSketchCanvas
   ref={canvasRef}

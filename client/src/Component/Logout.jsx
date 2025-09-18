@@ -42,11 +42,11 @@ const Logout = () => {
                     width: { xs: 32, md: 40 },
                     height: { xs: 32, md: 40 },
                     p: 0,
-                    borderColor: '#7C3AED',
-                    color: '#7C3AED',
+                    borderColor: '#3B82F6',
+                    color: '#3B82F6',
                     '&:hover': { 
-                        borderColor: '#5B21B6', 
-                        background: '#F3F0FF' 
+                        borderColor: '#1D4ED8', 
+                        background: '#EFF6FF' 
                     },
                     '& .MuiSvgIcon-root': {
                         fontSize: { xs: 18, md: 24 }
