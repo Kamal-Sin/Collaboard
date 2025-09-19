@@ -1,14 +1,12 @@
 services:
-  # Main Web Service (Backend + Serves Frontend)
+  # Backend API Service
   - type: web
-    name: collaboard-main
+    name: collaboard-backend
     env: node
     plan: free
-    buildCommand: |
-      cd server && npm install
-      cd ../client && npm install && npm run build
+    buildCommand: cd server && npm install
     startCommand: cd server && npm start
-    healthCheckPath: /auth/admin/health
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,4 +17,4 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CORS_ORIGIN
-        value: https://collaboard-main.onrender.com
+        value: https://collaboard.vercel.app

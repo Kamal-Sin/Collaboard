@@ -189,8 +189,13 @@ io.on('connection', (socket) => {
     });
 });
 
+// API routes - must come before static file serving
+app.use('/auth/admin', authAdminRoutes);
+app.use('/auth/user', authUserRoutes);
+app.use('/classroom', classRoomRoutes);
+
 // Health check endpoint
-app.get('/auth/admin/health', (req, res) => {
+app.get('/health', (req, res) => {
     res.status(200).json({ 
         status: 'OK', 
         message: 'Collaboard server is running',
@@ -198,16 +203,13 @@ app.get('/auth/admin/health', (req, res) => {
     });
 });
 
-app.use('/auth/admin', authAdminRoutes);
-app.use('/auth/user', authUserRoutes);
-app.use('/classroom', classRoomRoutes);
-
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-// Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+// API root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Collaboard API Server', 
+    status: 'running',
+    version: '1.0.0'
+  });
 });
 
 // Start server
