@@ -1,10 +1,13 @@
 import {io} from "socket.io-client"
-export  const  initsocket=async()=>{
-    const option={
-        "froce new connection":true,
-        reconnectionAttempt:"infinity",
-        timeout:1000,
-        transports:["websocket"],
+
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000"
+
+export const initsocket = async() => {
+    const option = {
+        "force new connection": true,
+        reconnectionAttempts: "Infinity",
+        timeout: 10000,
+        transports: ["websocket"],
     }
-    return io("http://localhost:5000/",option) 
+    return io(SOCKET_URL, option) 
 }
