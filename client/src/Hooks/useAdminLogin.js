@@ -16,7 +16,8 @@ const useAdminLogin = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:5000/auth/admin/login", {
+            const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? window.location.origin : "http://localhost:5000");
+            const res = await fetch(`${API_URL}/auth/admin/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

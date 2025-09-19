@@ -1,25 +1,12 @@
 services:
-  # Frontend (React/Vite) - Static Site
-  - type: static
-    name: collaboard-frontend
-    buildCommand: cd client && npm install && npm run build
-    staticPublishPath: ./client/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://collaboard-backend.onrender.com
-      - key: VITE_SOCKET_URL
-        value: https://collaboard-backend.onrender.com
-
-  # Backend (Node.js/Express) - Web Service
+  # Main Web Service (Backend + Serves Frontend)
   - type: web
-    name: collaboard-backend
+    name: collaboard-main
     env: node
     plan: free
-    buildCommand: cd server && npm install
+    buildCommand: |
+      cd server && npm install
+      cd ../client && npm install && npm run build
     startCommand: cd server && npm start
     healthCheckPath: /auth/admin/health
     envVars:
@@ -32,4 +19,4 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CORS_ORIGIN
-        value: https://collaboard-frontend.onrender.com
+        value: https://collaboard-main.onrender.com
