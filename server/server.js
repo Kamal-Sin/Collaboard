@@ -5,6 +5,12 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import mongoSanitize from 'express-mongo-sanitize';
+import morgan from 'morgan';
+import winston from 'winston';
 
 import connectDB from './Database/dbConnect.js';
 import authAdminRoutes from './routes/admin.routes.js';
@@ -19,25 +25,111 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
+// Configure Winston logger
+const logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.errors({ stack: true }),
+        winston.format.json()
+    ),
+    defaultMeta: { service: 'collaboard-server' },
+    transports: [
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'logs/combined.log' }),
+    ],
+});
+
+// Add console transport for non-production environments
+if (process.env.NODE_ENV !== 'production') {
+    logger.add(new winston.transports.Console({
+        format: winston.format.simple()
+    }));
+}
+
 const app = express();
 const server = http.createServer(app);
 
 // Configure CORS
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ["http://localhost:5173", "https://collaboard-frontend.vercel.app"];
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is allowed (with or without trailing slash)
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      return origin === allowedOrigin || 
+             origin === allowedOrigin.replace(/\/$/, '') || 
+             origin === allowedOrigin + '/';
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 const io = new Server(server, {
   cors: corsOptions
 });
 
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // limit each IP to 100 requests per windowMs in production
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// Compression middleware
+app.use(compression());
+
+// Request logging
+app.use(morgan('combined', {
+  stream: {
+    write: (message) => logger.info(message.trim())
+  }
+}));
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Cookie parser
 app.use(cookieParser());
+
+// CORS
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// MongoDB injection protection
+app.use(mongoSanitize());
 
 // Socket.IO logic
 const roomAdmins = new Map();
@@ -195,12 +287,29 @@ app.use('/auth/user', authUserRoutes);
 app.use('/classroom', classRoomRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'OK', 
-        message: 'Collaboard server is running',
-        timestamp: new Date().toISOString()
-    });
+app.get('/health', async (req, res) => {
+    try {
+        // Check database connection
+        const mongoose = await import('mongoose');
+        const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+        
+        res.status(200).json({ 
+            status: 'OK', 
+            message: 'Collaboard server is running',
+            timestamp: new Date().toISOString(),
+            database: dbStatus,
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            version: process.env.npm_package_version || '1.0.0'
+        });
+    } catch (error) {
+        logger.error('Health check failed:', error);
+        res.status(503).json({
+            status: 'ERROR',
+            message: 'Service unavailable',
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 // API root endpoint
@@ -212,9 +321,65 @@ app.get('/', (req, res) => {
   });
 });
 
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Global error handler
+app.use((error, req, res, next) => {
+  logger.error('Unhandled error:', {
+    error: error.message,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip
+  });
+
+  // Don't leak error details in production
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
+  res.status(error.status || 500).json({
+    error: 'Internal Server Error',
+    message: isDevelopment ? error.message : 'Something went wrong',
+    ...(isDevelopment && { stack: error.stack }),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
+
 // Start server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
-    connectDB();
+server.listen(PORT, async () => {
+    logger.info(`Server is listening on port ${PORT}`);
+    try {
+        await connectDB();
+        logger.info('Database connection established');
+    } catch (error) {
+        logger.error('Failed to connect to database:', error);
+        // In production, you might want to exit gracefully
+        if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+        }
+    }
 });

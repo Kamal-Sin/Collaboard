@@ -1,6 +1,6 @@
 import Admin from '../models/admin.model.js'
 import bcrypt from 'bcrypt'
-import generateToken from '../utils/generateTokens.js';
+import generateToken, { invalidateSession } from '../utils/generateTokens.js';
 
 
 export const signup = async (req, res)=>{
@@ -27,7 +27,7 @@ export const signup = async (req, res)=>{
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newAdmin = new Admin({ fullname, password: hashedPassword, email, employee_id });
-        generateToken(newAdmin._id, res);
+        await generateToken(newAdmin._id, 'admin', res);
         await newAdmin.save();
         res.status(201).json({ newAdmin });
 
@@ -51,7 +51,7 @@ export const login = async (req,res)=>{
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid password' });
         }
-        generateToken(admin._id, res);
+        await generateToken(admin._id, 'admin', res);
         res.status(200).json({fullname: admin.fullname, email: admin.email, employee_id: admin.employee_id });
 
     } catch (error) {
@@ -61,9 +61,13 @@ export const login = async (req,res)=>{
 }
 
 
-export const logout = (req, res) => {
-    
+export const logout = async (req, res) => {
     try{
+        // Invalidate the session if user info is available
+        if (req.user && req.user.sessionId) {
+            await invalidateSession(req.user.sessionId);
+        }
+        
         res.cookie('jwt', '', { maxAge: 0 });
         return res.status(200).json({ message: "User logged out successfully" });
     }
@@ -71,5 +75,18 @@ export const logout = (req, res) => {
         console.log('error in logout controller ', error.message);
         res.status(500).json({ error: "Internal server error" });
     }
-    
+};
+
+// Validate session endpoint
+export const validateAuth = (req, res) => {
+    try {
+        // If we reach here, the session is valid (middleware already validated)
+        res.status(200).json({ 
+            valid: true, 
+            userType: req.user.userType,
+            userId: req.user.userId 
+        });
+    } catch (error) {
+        res.status(401).json({ valid: false, error: "Invalid session" });
+    }
 };

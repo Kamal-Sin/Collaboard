@@ -36,12 +36,9 @@ const useUserSignup = () => {
                 return;
             }
 
-            // Store user and update context
-            localStorage.setItem("user-info", "user");
+            // Update context with session-based auth
             setAuthUser("user");
-
-            localStorage.setItem("user", JSON.stringify(data));
-            setUser(data);
+            setUser({ userType: "user", ...data });
 
             toast.success("Signup successful!");
             console.log(data);

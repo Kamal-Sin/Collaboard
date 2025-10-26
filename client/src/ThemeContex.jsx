@@ -5,7 +5,7 @@ import { Children, createContext, useState } from "react";
 export const ThemeContext=createContext();
 export const ThemeProvider=({children})=>{
     const[pen,setpen]=useState(15);
-    const[penColor,setpenColor]=useState('red');
+    const[penColor,setpenColor]=useState('black');
     const[showpen,setshowpen]=useState(false);
     const[username,setusername]=useState();
     const [atd,setatd]=useState([]);
@@ -13,6 +13,7 @@ export const ThemeProvider=({children})=>{
     const[rollnumber,setrollnumber]=useState();
       const [roomid, setroomid] = useState('');
       const[student,setstudent]=useState([{}]);
+      const[eraserSize,setEraserSize]=useState(30);
       //load username
         useEffect(() => {
     const storedUsername = JSON.parse(localStorage.getItem("username"));
@@ -40,7 +41,8 @@ export const ThemeProvider=({children})=>{
         mark,setmark,
         rollnumber,setrollnumber,
         roomid,setroomid,
-        student,setstudent
+        student,setstudent,
+        eraserSize,setEraserSize
     }
     return(
         <ThemeContext.Provider value={themeValue}>

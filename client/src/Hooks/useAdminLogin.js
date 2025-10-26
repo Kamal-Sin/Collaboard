@@ -33,12 +33,9 @@ const useAdminLogin = () => {
                 return;
             }
 
-            // Store user and update context
-            localStorage.setItem("user-info", "admin");
+            // Update context with session-based auth
             setAuthUser("admin");
-
-            localStorage.setItem("user", JSON.stringify(data));
-            setUser(data);
+            setUser({ userType: "admin", ...data });
 
             toast.success("Login successful!");
             console.log(data);

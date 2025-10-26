@@ -1,6 +1,6 @@
 import User from '../models/user.model.js'
 import bcrypt from 'bcrypt'
-import generateToken from '../utils/generateTokens.js';
+import generateToken, { invalidateSession } from '../utils/generateTokens.js';
 
 
 export const signup = async (req, res)=>{
@@ -53,7 +53,7 @@ export const login = async (req,res)=>{
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid password' });
         }
-        generateToken(user._id, res);
+        await generateToken(user._id, 'user', res);
         res.status(200).json({ fullname: user.fullname, email: user.email, university_rollno: user.university_rollno, class_rollno: user.class_rollno });
 
     } catch (error) {
@@ -63,9 +63,13 @@ export const login = async (req,res)=>{
 }
 
 
-export const logout = (req, res) => {
-    
+export const logout = async (req, res) => {
     try{
+        // Invalidate the session if user info is available
+        if (req.user && req.user.sessionId) {
+            await invalidateSession(req.user.sessionId);
+        }
+        
         res.cookie('jwt', '', { maxAge: 0 });
         return res.status(200).json({ message: "User logged out successfully" });
     }
@@ -73,5 +77,18 @@ export const logout = (req, res) => {
         console.log('error in logout controller ', error.message);
         res.status(500).json({ error: "Internal server error" });
     }
-    
+};
+
+// Validate session endpoint
+export const validateAuth = (req, res) => {
+    try {
+        // If we reach here, the session is valid (middleware already validated)
+        res.status(200).json({ 
+            valid: true, 
+            userType: req.user.userType,
+            userId: req.user.userId 
+        });
+    } catch (error) {
+        res.status(401).json({ valid: false, error: "Invalid session" });
+    }
 };

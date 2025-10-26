@@ -8,15 +8,12 @@ import {
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Logout = () => {
-    const { setAuthUser, setUser } = useAuthContext();
+    const { logout } = useAuthContext();
     const navigate = useNavigate();
     
-    const handleLogout = (e) => {
+    const handleLogout = async (e) => {
         e.preventDefault();
-        localStorage.removeItem("user-info");
-        setAuthUser(null);
-        localStorage.removeItem("user");
-        setUser(null);
+        await logout();
         toast.success("Logout Successfully");
         navigate("/");
     }

@@ -4,8 +4,8 @@ services:
     name: collaboard-backend
     env: node
     plan: free
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    buildCommand: cd server && npm install && mkdir -p logs
+    startCommand: cd server && chmod +x start.sh && ./start.sh
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -14,7 +14,7 @@ services:
         value: 10000
       - key: MONGODB_URI
         sync: false
-      - key: JWT_SECRET
+      - key: JWT_SECRET_KEY
         sync: false
       - key: CORS_ORIGIN
-        value: https://collaboard.vercel.app
+        value: https://collaboard-frontend.vercel.app,https://collaboard-frontend.vercel.app/

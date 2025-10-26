@@ -21,7 +21,7 @@ export default function Dashboard() {
    console.log("dashboard value",access)
 
     const[message,setmessage]=useState('');
-    const{pen,penColor,username,setatd,atd,mark,setmark,roomid,student,setstudent}=useContext(ThemeContext);
+    const{pen,penColor,username,setatd,atd,mark,setmark,roomid,student,setstudent,eraserSize}=useContext(ThemeContext);
     const boxstyle={
         display:"flex",
         justifyContent:"space-evenly",
@@ -258,7 +258,7 @@ console.log(student)
   ref={canvasRef}
   width="100%"
   height="80%"
-  strokeWidth={pen}
+  strokeWidth={penColor === '#D9D9D9' ? eraserSize : pen}
   strokeColor={penColor}
   canvasColor="#D9D9D9"
   withTimestamp={true}

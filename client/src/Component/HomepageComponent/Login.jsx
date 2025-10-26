@@ -13,7 +13,7 @@ export default function Login() {
   const [username, setUsername] = useState('')
   const { setusername } = useContext(ThemeContext)
   const {user}=useUserLogin()
-  console.log(user,"user from rohit");
+  console.log(user,"user from kamal");
 console.log(user.fullname,"after login")
   const handleSubmit = (e) => {
     e.preventDefault()

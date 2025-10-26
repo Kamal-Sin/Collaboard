@@ -6,7 +6,7 @@ import { Avatar, Box, Button, Paper, IconButton, Tooltip } from '@mui/material';
 import { ThemeContext } from '../../ThemeContex';
 
 export default function Tools() {
-  const { setpen, setpenColor, pen, showpen, setshowpen } = useContext(ThemeContext);
+  const { setpen, setpenColor, pen, showpen, setshowpen, eraserSize, setEraserSize } = useContext(ThemeContext);
   const [showPalette, setShowPalette] = useState(false);
   const [showeraser, setshoweraser] = useState(false);
 
@@ -18,20 +18,37 @@ export default function Tools() {
     setpen((prv) => prv - 1);
   };
 
+  const IncreaseEraserSize = () => {
+    setEraserSize((prv) => prv + 1);
+  };
+
+  const DecreaseEraserSize = () => {
+    setEraserSize((prv) => prv - 1);
+  };
+
   const Showpx = () => {
      console.log("showpen")
     setshowpen(prv => !prv);
-   
     setshoweraser(false);
+    setShowPalette(false);
+    // Reset to black color when selecting pen tool
+    setpenColor('black');
   };
 
   const setpxcolor = (e) => {
     setpenColor(e);
+    // When selecting a color, ensure we're in drawing mode
+    setshowpen(false);
+    setshoweraser(false);
+    setShowPalette(false);
   };
 
   const showcolorpalette = () => {
     setShowPalette(prv => !prv);
     setshoweraser(false);
+    setshowpen(false);
+    // Ensure we're in drawing mode when selecting colors
+    setpenColor('black');
   };
 
   const eraser = () => {
@@ -184,15 +201,15 @@ export default function Tools() {
           >
             <Button
               size="small"
-              onClick={Decreaesepx}
+              onClick={DecreaseEraserSize}
               sx={{ color: 'white', minWidth: '30px' }}
             >
               -
             </Button>
-            <Box sx={{ px: 2 }}>{pen}</Box>
+            <Box sx={{ px: 2 }}>{eraserSize}</Box>
             <Button
               size="small"
-              onClick={Increasepx}
+              onClick={IncreaseEraserSize}
               sx={{ color: 'white', minWidth: '30px' }}
             >
               +
