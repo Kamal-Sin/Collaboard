@@ -281,11 +281,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// API routes - must come before static file serving
-app.use('/auth/admin', authAdminRoutes);
-app.use('/auth/user', authUserRoutes);
-app.use('/classroom', classRoomRoutes);
-
 // Health check endpoint
 app.get('/health', async (req, res) => {
     try {
@@ -321,8 +316,13 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
+// API routes - must come before 404 handler
+app.use('/auth/admin', authAdminRoutes);
+app.use('/auth/user', authUserRoutes);
+app.use('/classroom', classRoomRoutes);
+
+// 404 handler - must be last
+app.all('*', (req, res) => {
   res.status(404).json({
     error: 'Route not found',
     message: `Cannot ${req.method} ${req.originalUrl}`,

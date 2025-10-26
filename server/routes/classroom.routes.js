@@ -6,9 +6,9 @@ import { create, getClassroom } from '../controllers/classroom.controller.js';
 import { validateClassroom } from '../middleware/validation.js';
 import { validateSession } from '../utils/generateTokens.js';
 
-router.post('/api/createroom', validateSession, validateClassroom, create);
+router.post('/createroom', validateSession, validateClassroom, create);
 
-router.post('/api/getclassroom', validateSession, getClassroom);
+router.post('/getclassroom', validateSession, getClassroom);
 
 
 export default router;
